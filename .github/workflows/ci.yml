@@ -41,19 +41,23 @@ jobs:
           pip install -r zephyr/scripts/requirements.txt
 
       - name: Install Zephyr SDK
+        env:
+          ZEPHYR_SDK_INSTALL_DIR: ${{ runner.temp }}/zephyr-sdk
         run: |
-          cd zephyrproject
-          west sdk install --no-prompt
+          cd zephyrproject/zephyr
+          west sdk install --install-dir "$ZEPHYR_SDK_INSTALL_DIR" --toolchains x86_64-zephyr-elf
 
       - name: Build (qemu_x86)
         env:
           ZEPHYR_BASE: ${{ github.workspace }}/zephyrproject/zephyr
+          ZEPHYR_SDK_INSTALL_DIR: ${{ runner.temp }}/zephyr-sdk
         run: |
           west build -b qemu_x86 $GITHUB_WORKSPACE/app -d build
-      
+
       - name: QEMU smoke test (telemetry)
         env:
           ZEPHYR_BASE: ${{ github.workspace }}/zephyrproject/zephyr
-        run:
+          ZEPHYR_SDK_INSTALL_DIR: ${{ runner.temp }}/zephyr-sdk
+        run: |
           timeout 8s west build -d build -t run | tee qemu.log || true
           grep -E "TLM" qemu.log
