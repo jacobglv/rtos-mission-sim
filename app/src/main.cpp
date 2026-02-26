@@ -1,11 +1,17 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 
-extern "C" void app_main(void) {
+extern "C" void app_main(void)
+{
     printk("boot OK: rtos-mission-sim\n");
-    int counter = 0;
-    while (true) {
-        printk("tick %d\n", counter++);
-        k_sleep(K_SECONDS(1));
+    uint64_t seq;
+
+    while (true)
+    {
+        seq = k_uptime_get();
+        printk("TLM ts_ms<%d>\n", seq);
+
+        // Wait 100 ms
+        k_sleep(K_MSEC(100));
     }
 }
