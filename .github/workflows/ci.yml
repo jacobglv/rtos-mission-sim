@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build gperf ccache dfu-util device-tree-compiler \
+            python3-pip python3-venv python3-dev wget xz-utils file \
+            qemu-system-x86
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install west
+        run: |
+          python -m pip install --upgrade pip
+          pip install west
+
+      - name: Fetch Zephyr
+        run: |
+          mkdir -p zephyrproject
+          cd zephyrproject
+          west init -m https://github.com/zephyrproject-rtos/zephyr --mr main
+          west update
+          west zephyr-export
+          pip install -r zephyr/scripts/requirements.txt
+
+      - name: Install Zephyr SDK
+        run: |
+          cd zephyrproject
+          west sdk install --no-prompt
+
+      - name: Build (qemu_x86)
+        env:
+          ZEPHYR_BASE: ${{ github.workspace }}/zephyrproject/zephyr
+        run: |
+          west build -b qemu_x86 $GITHUB_WORKSPACE/app -d build
