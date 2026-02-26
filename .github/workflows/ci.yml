@@ -50,3 +50,10 @@ jobs:
           ZEPHYR_BASE: ${{ github.workspace }}/zephyrproject/zephyr
         run: |
           west build -b qemu_x86 $GITHUB_WORKSPACE/app -d build
+      
+      - name: QEMU smoke test (telemetry)
+        env:
+          ZEPHYR_BASE: ${{ github.workspace }}/zephyrproject/zephyr
+        run:
+          timeout 8s west build -d build -t run | tee qemu.log || true
+          grep -E "TLM" qemu.log
