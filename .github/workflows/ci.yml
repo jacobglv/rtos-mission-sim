@@ -22,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: "pip"
           cache-dependency-path: requirements.txt
 
@@ -60,4 +60,4 @@ jobs:
           ZEPHYR_SDK_INSTALL_DIR: ${{ runner.temp }}/zephyr-sdk
         run: |
           timeout 8s west build -d build -t run | tee qemu.log || true
-          grep -E "TLM" qemu.log
+          grep -E "TLM|Telemetry Data" qemu.log
