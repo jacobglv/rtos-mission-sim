@@ -60,4 +60,4 @@ jobs:
           ZEPHYR_SDK_INSTALL_DIR: ${{ runner.temp }}/zephyr-sdk
         run: |
           timeout 8s west build -d build -t run | tee qemu.log || true
-          grep -E "TLM" qemu.log
+          grep -E "TLM|Telemetry Data" qemu.log
