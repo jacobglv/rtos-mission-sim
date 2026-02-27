@@ -20,7 +20,7 @@ struct TelemetryMessage
 
 // Bounded stack/msgq in static memory
 K_THREAD_STACK_DEFINE(sensor_stack, THREAD_STACK_SIZE);
-K_MSGQ_DEFINE(telemetry_msgq, sizeof(TelemetryMessage), 4, 4);
+K_MSGQ_DEFINE(telemetry_msgq, sizeof(TelemetryMessage), 16, 4);
 
 void sensor_thread(void *p1, void *p2, void *p3);
 
